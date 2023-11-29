@@ -43,7 +43,6 @@ if(isset($_POST['register'])){
 	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
 
 	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
 
 	<title>Sign Up</title>
 
