@@ -11,14 +11,18 @@ if (!$result) {
 
 // Proses pencarian
 if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-    $query = "SELECT email, name FROM users WHERE email LIKE '%$search%'";
-    $result = $conn->query($query);
+    $search = '%' . $_GET['search'] . '%';
+    $stmt = $conn->prepare("SELECT id,email, name FROM users WHERE email LIKE ?");
+    $stmt->bind_param("s", $search);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if (!$result) {
         die("Error searching data: " . $conn->error);
     }
+    $stmt->close();
 }
+
 
 // Hapus data
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
@@ -121,17 +125,23 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
 										</thead>
 										<tbody>
 										<?php
-                                            while ($row = $result->fetch_assoc()) {
-                                                echo "<tr>";
-                                                echo "<td>" . $row['name'] . "</td>";
-                                                echo "<td>". $row['email'] ."</td>";
-                                                echo "<td class='d-none d-md-table-cell'>
-                                                        <a href='edit.php?id=" . $row['id'] . "'><button class='btn btn-primary'>Edit</button></a>
-                                                        <a href='datauser.php?action=delete&id=" . $row['id'] . "'><button class='btn btn-danger'>Hapus</button></a>
-                                                      </td>";
-                                                echo "</tr>";
-                                            }
-                                            ?>
+					                                            while ($row = $result->fetch_assoc()) {
+					                                                echo "<tr>";
+					                                                echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+											echo "<td>" . htmlspecialchars($row['email']) . "</td>";
+					
+					                                                echo "<td class='d-none d-md-table-cell'>";
+												if (isset($row['id'])) {
+													echo "<a href='edit.php?id=" . $row['id'] . "'><button class='btn btn-primary'>Edit</button></a>";
+													echo "<a href='datauser.php?action=delete&id=" . $row['id'] . "'><button class='btn btn-danger'>Hapus</button></a>";
+												} else {
+													// Handle the case where 'id' is not set
+													echo "N/A";
+												}
+												echo "</td>";
+						                                                echo "</tr>";
+						                                            }
+						                                            ?>
 										</tbody>
 									</table>
 								</div>
